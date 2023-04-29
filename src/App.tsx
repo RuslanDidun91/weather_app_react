@@ -1,12 +1,11 @@
-import React from 'react';
-import './App.css';
+import Cities from './components/Cities';
+import CurrentWeather from './components/CurrentWeather';
+import './styles.css';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-
-      </header>
+    <div className=''>
+      <Cities />
     </div>
   );
 }
