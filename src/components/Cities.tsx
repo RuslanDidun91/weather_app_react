@@ -3,7 +3,7 @@ import { WEATHER_API_URL } from '../api';
 import CurrentWeather from './CurrentWeather';
 import Forecast from './Forecast';
 
-const API_KEY = process.env.REACT_APP_SEECRET_KEY;
+const API_KEY = process.env.REACT_APP_SECRET_KEY;
 
 interface WeatherData {
   weather: {
@@ -15,62 +15,81 @@ interface WeatherData {
   };
 }
 
-const cities: string[] = ['Kyiv', 'Tofino', 'Yuma'];
-const position: { [key: string]: { latitude: number; longitude: number } } = {
-  Kyiv: { latitude: 50.4501, longitude: 30.5234 },
-  Tofino: { latitude: 49.1530, longitude: 125.9066 },
-  Yuma: { latitude: 32.6927, longitude: 114.6277 }
+interface CityPosition {
+  name: string;
+  latitude: number;
+  longitude: number;
 }
+
+const cities: CityPosition[] = [
+  { name: 'Kyiv', latitude: 50.4501, longitude: 30.5234 },
+  { name: 'Tofino', latitude: 49.1530, longitude: 125.9066 },
+  { name: 'Yuma', latitude: 32.6927, longitude: 114.6277 },
+];
 
 const Cities = () => {
 
-  const [activeCity, setActiveCity] = useState<string>(cities[0]);
+  const [selectedCity, setSelectedCity] = useState<string>(cities[0].name);
   const [currentWeather, setCurrentWeather] = useState<WeatherData | null>(null);
   const [forecast, setForecast] = useState(null);
+  const [error, setError] = useState<string | null>(null);
+
 
   const handleCityClick = (city: string) => {
-    setActiveCity(city);
+    setSelectedCity(city);
   };
 
   useEffect(() => {
     const fetchWeatherData = async () => {
+      const { latitude, longitude } = cities.find(city => city.name === selectedCity)!;
 
-      const currentWeather = fetch(
-        `${WEATHER_API_URL}/weather?lat=${position[activeCity].latitude}&lon=${position[activeCity].longitude}&appid=${API_KEY}&units=metric`
-      );
+      try {
+        const [currentWeatherRes, forecastRes] = await Promise.all([
+          fetch(`${WEATHER_API_URL}/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`),
+          fetch(`${WEATHER_API_URL}/forecast?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`),
+        ]);
 
-      const forecastWeather = fetch(
-        `${WEATHER_API_URL}/forecast?lat=${position[activeCity].latitude}&lon=${position[activeCity].longitude}&appid=${API_KEY}&units=metric`
-      )
+        if (!currentWeatherRes.ok || !forecastRes.ok) {
+          throw new Error('Failed to fetch weather data');
+        }
 
-      Promise.all([currentWeather, forecastWeather]).then(async (res) => {
-        const weatherResponse = await res[0].json();
-        const forecastResponse = await res[1].json();
+        const [currentWeatherData, forecastData] = await Promise.all([
+          currentWeatherRes.json(),
+          forecastRes.json(),
+        ]);
 
-        setCurrentWeather(weatherResponse);
-        setForecast(forecastResponse);
-
-      }).catch((err) => {
-        console.log(err);
-      });
-
+        setCurrentWeather(currentWeatherData);
+        setForecast(forecastData);
+        setError(null);
+      } catch (error) {
+        console.error(error);
+        setCurrentWeather(null);
+        setError('Oops! Something went wrong. Please try again later.');
+        setForecast(null);
+      }
     };
+
     fetchWeatherData();
-  }, [activeCity]);
+  }, [selectedCity]);
 
   return (
     <div>
+      {error && <div className="text-red-500">{error}</div>}
       <div className='flex flex-row justify-center my-5'>
         {cities.map((city) => (
-          <button className={`px-5 py-1 mx-3 rounded-lg text-xl ${activeCity === city
-            ? 'bg-blue-400 text-bold' : 'bg-gray-200'}`}
-            key={city} onClick={() => handleCityClick(city)}>
-            {city}
+          <button
+            className={`px-5 py-1 mx-3 rounded-lg text-xl ${selectedCity === city.name
+              ? 'bg-blue-400 text-bold'
+              : 'bg-gray-200'}`}
+            key={city.name}
+            onClick={() => handleCityClick(city.name)}
+          >
+            {city.name}
           </button>
         ))}
       </div>
       <div className='flex items-center justify-center'>
-        <div className="justify-center items-center w-2/3 h-1/2 border-2 border-white shadow-lg">
+        <div className="justify-center items-center w-2/3 h-1/2 border-2 border-white shadow-lg rounded-lg">
           {currentWeather && (<CurrentWeather currentWeather={currentWeather} />)}
           {forecast && <Forecast forecast={forecast} />}
         </div>
@@ -78,5 +97,6 @@ const Cities = () => {
     </div>
   );
 };
+
 
 export default Cities;

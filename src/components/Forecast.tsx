@@ -32,7 +32,7 @@ const Forecast: React.FC<ForecastProps> = ({ forecast }) => {
 
   return (
     <div className="col-span-1 lg:col-span-1 grid grid-cols-4">
-      {forecast.list.splice(0, 4).map((item, idx) => (
+      {forecast?.list?.splice(0, 4).map((item, idx) => (
         <div key={idx} className="border-2 border-white flex flex-col items-center py-5">
           <div>{forecastDays[idx]}</div>
           <img src={`icons/${item.weather[0].icon}.png`}
