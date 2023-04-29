@@ -24,7 +24,7 @@ interface CityPosition {
 const cities: CityPosition[] = [
   { name: 'Kyiv', latitude: 50.4501, longitude: 30.5234 },
   { name: 'Tofino', latitude: 49.1530, longitude: 125.9066 },
-  { name: 'Yuma', latitude: 32.6927, longitude: 114.6277 },
+  { name: 'Sydney', latitude: 33.8688, longitude: 151.2093 },
 ];
 
 const Cities = () => {
@@ -54,8 +54,8 @@ const Cities = () => {
         }
 
         const [currentWeatherData, forecastData] = await Promise.all([
-          currentWeatherRes.json(),
-          forecastRes.json(),
+          currentWeatherRes.json() as Promise<WeatherData>,
+          forecastRes.json() as Promise<any>,
         ]);
 
         setCurrentWeather(currentWeatherData);
@@ -89,7 +89,8 @@ const Cities = () => {
         ))}
       </div>
       <div className='flex items-center justify-center'>
-        <div className="justify-center items-center w-2/3 h-1/2 border-2 border-white shadow-lg rounded-lg">
+        <div className="justify-center items-center w-2/3 h-1/2 border-2
+         border-white shadow-lg rounded-lg">
           {currentWeather && (<CurrentWeather currentWeather={currentWeather} />)}
           {forecast && <Forecast forecast={forecast} />}
         </div>
