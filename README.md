@@ -5,7 +5,6 @@
  <a>[<img src="https://i.imgur.com/z1xu36H.png" alt="Logo" width="120" height="120">](https://cloud-control.netlify.app/)
  </a>
  
-  
 ##### Weather or Not... © 2023 
 </br>
 
@@ -34,15 +33,11 @@ Pretty simple straight forward app, which shows weather in particullar cities
 <img src="https://i.imgur.com/0gbkVcK.png" alt="Logo" width="700" height="500">
 </br>
 
-
-
 ## Upcoming Features
 
 - [x] Created and set up project, installed all packages and libraries.
 - [x] Made api call to openWeather API and added typescript, tailwindCSS.
 - [ ] implement search input and feature for adding favourite cities.
-
-
 
 ## Technologies  
 ![React](https://img.shields.io/badge/-React-05122A?style=flat&logo=React)
