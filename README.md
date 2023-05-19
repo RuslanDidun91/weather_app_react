@@ -21,7 +21,6 @@
   <a href="#technologies">Technologies</a> 
 </p>
 
-
 ## About
 
 Cloud Control is my personal small weather app, created making another test assessment. 
